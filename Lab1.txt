@@ -1,0 +1,168 @@
+----------------------------------------------------------------------------------------
+-------------------------------------- DELETE ALL --------------------------------------
+----------------------------------------------------------------------------------------
+/*
+\set QUIET true
+SET client_min_messages TO WARNING;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+SET client_min_messages TO NOTICE;
+\set QUIET false
+*/
+
+
+----------------------------------------------------------------------------------------
+---------------------------------------- PART 1 ----------------------------------------
+----------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------
+-------------------------------------- DATABASES ---------------------------------------
+----------------------------------------------------------------------------------------
+
+CREATE TABLE Students(
+	idnr CHAR(10) NOT NULL,
+	name TEXT NOT NULL,
+	login TEXT NOT NULL, --osäker på typ här
+	program TEXT NOT NULL,
+	PRIMARY KEY(idnr)
+	);
+
+CREATE TABLE Branches(
+	name TEXT NOT NULL,
+	program TEXT NOT NULL,
+	PRIMARY KEY(name, program)
+	);
+
+CREATE TABLE Courses(
+	code CHAR(6) NOT NULL,
+	name TEXT NOT NULL,
+	credits DECIMAL(3,1) NOT NULL, --3 nummer, 1 decimal
+	department TEXT NOT NULL,
+	PRIMARY KEY(code)
+	);
+
+CREATE TABLE LimitedCourses(
+	code CHAR(6) NOT NULL,
+	capacity INT, --not all courses have restriction on capacity
+	PRIMARY KEY(code),
+	FOREIGN KEY (code) REFERENCES Courses
+	);
+
+CREATE TABLE StudentBranches(
+	student CHAR(10) NOT NULL,
+	branch TEXT NOT NULL,
+	program TEXT NOT NULL,
+	PRIMARY KEY(student),
+	FOREIGN KEY (student) REFERENCES Students,
+	FOREIGN KEY (branch, program) REFERENCES Branches
+	);
+
+CREATE TABLE Classifications(
+	name TEXT NOT NULL,
+	PRIMARY KEY(name)
+	);
+
+/* Courses can be classified as being mathematical courses, research courses or seminar courses. Not all courses need to be classified, and some courses may have more than one classification. The university will occasionally introduce new classifications, so the database needs to allow this. */
+CREATE TABLE Classified(
+	course CHAR(6) NOT NULL,
+	classification TEXT NOT NULL,
+	PRIMARY KEY(course, classification),
+	FOREIGN KEY (course) REFERENCES Courses,
+	FOREIGN KEY (classification) REFERENCES Classifications
+	); --classification does not need to exist or be unique
+
+CREATE TABLE MandatoryProgram(
+	course CHAR(6) NOT NULL,
+	classification TEXT NOT NULL,
+	PRIMARY KEY (course, classification),
+	FOREIGN KEY (course) REFERENCES Courses
+	);
+
+CREATE TABLE MandatoryBranch(
+	course CHAR(6) NOT NULL,
+	branch TEXT NOT NULL,
+	program TEXT NOT NULL,
+	PRIMARY KEY (course, branch, program),
+	FOREIGN KEY (course) REFERENCES Courses,
+	FOREIGN KEY (branch, program) REFERENCES Branches
+	);
+
+CREATE TABLE RecommendedBranch(
+	course CHAR(6) NOT NULL,
+	branch TEXT NOT NULL,
+	program TEXT NOT NULL,
+	PRIMARY KEY (course, branch, program),
+	FOREIGN KEY (course) REFERENCES Courses,
+	FOREIGN KEY (branch, program) REFERENCES Branches
+	);
+
+CREATE TABLE Registered(
+	student CHAR(10) NOT NULL,
+	course CHAR(6) NOT NULL,
+	PRIMARY KEY (student, course),
+	FOREIGN KEY (student) REFERENCES Students,
+	FOREIGN KEY (course) REFERENCES Courses
+	);
+
+CREATE TABLE Taken(
+	student CHAR(10) NOT NULL,
+	course CHAR(6) NOT NULL,
+	grade CHAR(1) NOT NULL CHECK (grade IN ('U', '3', '4', '5')),
+	PRIMARY KEY (student, course),
+	FOREIGN KEY (student) REFERENCES Students,
+	FOREIGN KEY (course) REFERENCES Courses
+	);
+
+CREATE TABLE WaitingList(
+	student CHAR(10) NOT NULL,
+	course CHAR(6) NOT NULL,
+	position SERIAL,
+	PRIMARY KEY (student, course),
+	FOREIGN KEY (student) REFERENCES Students,
+	FOREIGN KEY (course) REFERENCES Courses
+	);
+
+
+----------------------------------------------------------------------------------------
+---------------------------------------- VIEWS -----------------------------------------
+----------------------------------------------------------------------------------------
+
+CREATE OR REPLACE VIEW BasicInformation AS(
+	SELECT idnr, name, login, Students.program, COALESCE(branch,'') AS branch
+	FROM Students
+	FULL JOIN StudentBranches
+	ON (Students.idnr = StudentBranches.student)
+	);
+
+CREATE OR REPLACE VIEW FinishedCourses AS(
+	SELECT student, course, grade, credits
+	FROM Taken
+	JOIN Courses
+	ON (Taken.course = Courses.code)
+	);
+
+CREATE OR REPLACE VIEW FinishedCourses AS(
+	SELECT student, course, credits
+	FROM Taken
+	JOIN Courses
+	ON (Taken.course = Courses.code)
+	WHERE grade NOT IN ('U')
+	);
+
+CREATE OR REPLACE VIEW Registrations AS(
+	
+	
+	
+	);
+
+
+
+
+Registrations(student, course, status)
+
+
+
+
+
