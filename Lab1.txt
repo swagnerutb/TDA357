@@ -64,7 +64,6 @@ CREATE TABLE Classifications(
 	PRIMARY KEY(name)
 	);
 
-/* Courses can be classified as being mathematical courses, research courses or seminar courses. Not all courses need to be classified, and some courses may have more than one classification. The university will occasionally introduce new classifications, so the database needs to allow this. */
 CREATE TABLE Classified(
 	course CHAR(6) NOT NULL,
 	classification TEXT NOT NULL,
@@ -153,14 +152,9 @@ CREATE OR REPLACE VIEW FinishedCourses AS(
 
 CREATE OR REPLACE VIEW Registrations AS(
 	
-	
-	
 	);
-
-
-
-
-Registrations(student, course, status)
+	
+-- Registrations(student, course, status)
 
 
 
