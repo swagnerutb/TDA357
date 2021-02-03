@@ -160,3 +160,88 @@ CREATE OR REPLACE VIEW Registrations AS(
 
 
 
+
+/*
+
+______________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________
+
+
+-- TOTAL CREDITS
+	SELECT student, SUM(credits) as totalCredits
+	FROM passedcourses
+	GROUP BY student
+
+-- MANDATORY LEFT
+	SELECT student, course
+	FROM unreadmandatory
+
+-- MATH CREDITS
+	SELECT student, credits AS mathCredits -- passedcourses.course, credits, classification
+	FROM PassedCourses
+	FULL JOIN Classified
+	ON PassedCourses.course = Classified.course
+	WHERE classification = 'math'
+
+-- RESEARCH CREDITS
+	SELECT student, credits AS researchCredits -- passedcourses.course, credits, classification
+	FROM PassedCourses
+	FULL JOIN Classified
+	ON PassedCourses.course = Classified.course
+	WHERE classification = 'research'
+
+-- NUMER OF PASSED SEMINAR COURSES
+	SELECT student, COUNT(classification) AS seminarCourses
+	FROM Classified
+	JOIN PassedCourses
+	ON Classified.course = PassedCourses.course
+	WHERE classification = 'seminar'
+	GROUP BY student
+
+-- QUALIFIED FOR GRADUATION
+	
+	
+---------------------------------------------------------------------------------
+--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!--
+------------------------------------ TODO ---------------------------------------
+-- qualified: whether or not they qualify for graduation
+
+-- QUALIFIED (boolean)
+
+-- start from studentbranches. A student cannot graduate without having chosen a branch
+
+/*
+Requirements for graduation:
+	- Passed (grade >= 3) in all mandatory courses of respective program
+	- Passed (grade >= 3) in all mandatory courses of respective branch
+	- Passed >= 10 credits of courses among the recommended courses for the branch
+	- Passed >= 20 credits of maths courses
+	- Passed >= 10 credits of research courses
+	- Passed >= 1 seminar course
+*/
+
+SELECT student, qualified
+FROM
+
+--Kom ihåg att kolla detta mot passedCourses
+SELECT student, StudentBranches.branch, StudentBranches.program, MandatoryProgram.course AS mandatoryProgram, MandatoryBranch.course AS mandatoryBranch
+FROM StudentBranches
+FULL JOIN MandatoryBranch
+ON StudentBranches.branch = MandatoryBranch.branch
+FULL JOIN MandatoryProgram
+ON StudentBranches.program = MandatoryProgram.program
+ORDER BY student
+
+______________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________
+*/
+
+
+
+
+
+
