@@ -179,18 +179,20 @@ ________________________________________________________________________________
 	FROM unreadmandatory
 
 -- MATH CREDITS
-	SELECT student, credits AS mathCredits -- passedcourses.course, credits, classification
+	SELECT student, SUM(credits) AS mathCredits --, PassedCourses.course, classification
 	FROM PassedCourses
-	FULL JOIN Classified
+	LEFT OUTER JOIN Classified
 	ON PassedCourses.course = Classified.course
 	WHERE classification = 'math'
+	GROUP BY student, PassedCourses.course, Classified.course, Classified.classification
 
 -- RESEARCH CREDITS
-	SELECT student, credits AS researchCredits -- passedcourses.course, credits, classification
+	SELECT student, SUM(credits) AS researchCredits --, PassedCourses.course, classification
 	FROM PassedCourses
-	FULL JOIN Classified
+	LEFT OUTER JOIN Classified
 	ON PassedCourses.course = Classified.course
 	WHERE classification = 'research'
+	GROUP BY student, PassedCourses.course, Classified.course, Classified.classification
 
 -- NUMER OF PASSED SEMINAR COURSES
 	SELECT student, COUNT(classification) AS seminarCourses
