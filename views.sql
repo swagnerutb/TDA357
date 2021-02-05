@@ -47,7 +47,7 @@ CREATE OR REPLACE VIEW UnreadMandatory AS(
 	);
 
 CREATE OR REPLACE VIEW PathToGraduation AS(
-	WITH pathGrad AS (
+	WITH PathGrad AS (
 		SELECT idnr AS student, totalCredits, mandatoryLeft, mathCredits, researchCredits, seminarCourses, recommendedCredits
 		FROM(	SELECT *
 			FROM Students
@@ -138,7 +138,7 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 		ELSE FALSE
 		END
 		AS qualified
-	FROM pathGrad
+	FROM PathGrad
 
 	);
 
