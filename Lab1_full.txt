@@ -20,7 +20,7 @@ SET client_min_messages TO NOTICE;
 
 
 ----------------------------------------------------------------------------------------
--------------------------------------- DATABASES ---------------------------------------
+--------------------------------------- TABLES -----------------------------------------
 ----------------------------------------------------------------------------------------
 
 CREATE TABLE Students(
@@ -40,14 +40,14 @@ CREATE TABLE Branches(
 CREATE TABLE Courses(
 	code CHAR(6) NOT NULL,
 	name TEXT NOT NULL,
-	credits DECIMAL(3,1) NOT NULL, --3 nummer, 1 decimal
+	credits DECIMAL(3,1) NOT NULL CHECK (credits >= 0), --3 nummer, 1 decimal
 	department TEXT NOT NULL,
 	PRIMARY KEY(code)
 	);
 
 CREATE TABLE LimitedCourses(
 	code CHAR(6) NOT NULL,
-	capacity INT, --not all courses have restriction on capacity
+	capacity INT NOT NULL CHECK (capacity >= 0),
 	PRIMARY KEY(code),
 	FOREIGN KEY (code) REFERENCES Courses
 	);
@@ -122,7 +122,7 @@ CREATE TABLE WaitingList(
 	position SERIAL,
 	PRIMARY KEY (student, course),
 	FOREIGN KEY (student) REFERENCES Students,
-	FOREIGN KEY (course) REFERENCES Courses
+	FOREIGN KEY (course) REFERENCES LimitedCourses
 	);
 
 
