@@ -199,7 +199,7 @@ INSERT INTO Taken VALUES('5555555555', 'CCC444', '5');
 ----------------------------------------------------------------------------------------
 
 CREATE OR REPLACE VIEW BasicInformation AS(
-	SELECT idnr, name, login, Students.program, COALESCE(branch,'0') AS branch
+	SELECT idnr, name, login, Students.program, branch
 	FROM Students
 	FULL JOIN StudentBranches
 	ON (Students.idnr = StudentBranches.student)
@@ -268,7 +268,8 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 
 			LEFT OUTER JOIN
 
-			(SELECT idnr AS student, COALESCE(mathCredits,'0') AS mathCredits
+
+			(SELECT idnr AS student, SUM(COALESCE(mathCredits,'0')) AS mathCredits
 			FROM Students
 			LEFT OUTER JOIN
 			(SELECT student, SUM(credits) AS mathCredits
@@ -278,12 +279,15 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 			WHERE classification = 'math'
 			GROUP BY student, PassedCourses.course, Classified.course,
 			Classified.classification) AS MathOne
-			ON Students.idnr = MathOne.student) AS MathTwo
+			ON Students.idnr = MathOne.student
+			GROUP BY Students.idnr) AS MathTwo
 			ON Students.idnr = MathTwo.student
+			--GROUP BY student
+
 
 			LEFT OUTER JOIN
 
-			(SELECT idnr AS student, COALESCE(researchCredits,'0') AS researchCredits
+			(SELECT idnr AS student, SUM(COALESCE(researchCredits,'0')) AS researchCredits
 			FROM Students
 			LEFT OUTER JOIN
 			(SELECT student, SUM(credits) AS researchCredits
@@ -293,12 +297,14 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 			WHERE classification = 'research'
 			GROUP BY student, PassedCourses.course, Classified.course,
 			Classified.classification) AS ResearchOne
-			ON Students.idnr = ResearchOne.student) AS ResearchTwo
+			ON Students.idnr = ResearchOne.student
+			GROUP BY Students.idnr) AS ResearchTwo
 			ON Students.idnr = ResearchTwo.student
+			--GROUP BY student
 
 			LEFT OUTER JOIN
 			
-			(SELECT idnr AS student, COALESCE(seminarCourses,'0') AS seminarCourses
+			(SELECT idnr AS student, SUM(COALESCE(seminarCourses,'0')) AS seminarCourses
 			FROM Students
 			LEFT OUTER JOIN
 			(SELECT student, COUNT(classification) AS seminarCourses
@@ -307,7 +313,8 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 			ON Classified.course = PassedCourses.course
 			WHERE classification = 'seminar'
 			GROUP BY student) AS SeminarOne
-			ON Students.idnr = SeminarOne.student) AS SeminarTwo
+			ON Students.idnr = SeminarOne.student
+			GROUP BY Students.idnr) AS SeminarTwo
 			ON Students.idnr = SeminarTwo.student
 
 			LEFT OUTER JOIN
