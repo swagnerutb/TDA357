@@ -282,7 +282,6 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 			ON Students.idnr = MathOne.student
 			GROUP BY Students.idnr) AS MathTwo
 			ON Students.idnr = MathTwo.student
-			--GROUP BY student
 
 
 			LEFT OUTER JOIN
@@ -300,7 +299,6 @@ CREATE OR REPLACE VIEW PathToGraduation AS(
 			ON Students.idnr = ResearchOne.student
 			GROUP BY Students.idnr) AS ResearchTwo
 			ON Students.idnr = ResearchTwo.student
-			--GROUP BY student
 
 			LEFT OUTER JOIN
 			
